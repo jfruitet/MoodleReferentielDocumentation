@@ -1,0 +1,72 @@
+
+ENGLISH
+-------
+"referentiel" is a Moodle module for skill certification.
+You can:
+- specify a repository or import it
+- declare activities linked with competencies
+- follow students declarations
+- propose tasks (a mission, list of competencies, linked documents...)
+- export an print certificates
+
+- If your site enables Outcomes (also known as Competencies, Goals, Standards or Criteria),
+you can now export a list of Outcomes from referentiel module then grade things using
+that scale (forum, database, assigments, etc.) throughout the site.
+These grades will be integrated in Referentiel module.
+
+FRANCAIS
+--------
+"referentiel" est un module Moodle destiné à implanter une activité de type certification
+de compétences.
+Ce module permet :
+- de spécifier un référentiel de compétences (ou de le télécharger) ;
+- de déclarer des activités et d'associer celles-ci aux compétences du référentiel ;
+- de gérer l'accompagnement ;
+- de définir des tâches (mission, consignes, liste de compétences mobilisées pour accomplir la tâche, documents attachés) ;
+- d'émettre des certificats basés sur le dit référentiel ;
+
+- Si le site active les Objectifs, vous pouvez exporter le référentiel sous forme d'une
+liste d'objectifs qui serviront alors à évaluer toute forme d'activité
+(forum, BD, devoir, etc.)
+Ces notations sont récupérées dans le module référentiel sous forme de compétences
+validées dans des déclaration d'activité.
+
+
+---------------------------------------------------------
+ This is the "graphical" structure of the referentiel module:
+
+                 (referentiel INSTANCE)                                          (referentiel OCCURRENCE)
+                     Table referentiel                                         Table referentiel_referentiel         Table referentiel_etablissement     Table referentiel_pedagogie
+                    (CL,pk->id, fk->id_referentiel_referentiel)                         (pk->id)                         (pk->id, files)                      (pk->id)
+                        |                        |                                        #                                   |                                 |
+                        |                        |                                        |                      Table referentiel_etudiant              Table referentiel_a_user_pedagogie
+                        |                        |-----------------n : 1 -----------------|                      (UL, pk->id, fk->id_etablissement,       ( pk->id, fk->id_pedagogie,
+                      1 : n                                                               |                       fk->id_user) --------------------------- fk->id_user, fk->id_referentiel_referentiel)
+                        |                                                                 |                                                                                       |
+                        |---------------------------------------|                         |-----|---------------------------------------------------------------------------------|
+                        |                                       |                               |
+           Table referentiel_activites            Table referentiel_task            Table referentiel_certificat
+           (UL,pk->id, fk->referentiel,files,	  (UL,pk->id, fk->referentiel,files)   (pk->id, fk->id_referentiel_referentiel
+                     fk->id_user)          |      |             |                          fk->id_user)
+                        |                  |      |             |                               |
+                      1 : n                |      |           1 : n                             |
+                        |                  |      |             |                               |
+                 referentiel_document      |      |      referentiel_consigne          referentiel_domaine
+           (pk->id, fk->id_activite, files)|      |     (pk->id, fk->id_task, files)    (pk->id, fk->id_referentiel_referentiel)
+                                           |      |                                             |
+                                           |      |                                    referentiel_competence
+                                           |------|                                     (pk->id, fk->id_domaine)
+										      |                                                 |
+                                              |                                       referentiel_item_competence
+                                    referentiel_a_user_task                            (pk->id, fk->id_competence, fk->id_referentiel_referentiel)
+                           (UL, pk->id, fk->id_activite, fk->id_task)
+
+ Meaning: pk->primary key field of the table
+          fk->foreign key to link with parent
+          nt->nested field (recursive data)
+          CL->course level info
+          UL->user level info
+          files->table may have files)
+
+-----------------------------------------------------------
+
